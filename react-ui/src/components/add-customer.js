@@ -14,133 +14,145 @@ export default class AddCustomer extends Component {
     this.onChangeAddress = this.onChangeAddress.bind(this);
     this.onChangeSuburb = this.onChangeSuburb.bind(this);
     this.onChangePostcode = this.onChangePostcode.bind(this);
-
     this.saveCustomer = this.saveCustomer.bind(this);
-    this.newCustomer = this.newCustomer.bind(this);
+    this.newCustomer = this.newCustomer.bind(this);    
 
     this.state = {
-      customer: {},
+      customer: {},      
       id: null,
       published: false,
       submitted: false,
-      errorMessage: ''
+      errorMessage: ''   
     };
+  }
+
+  setCustomer(customer) {
+    this.setState({
+      customer: customer
+    });
   }
 
   onChangeTitle(e) {   
-    this.setState({
-      customer: {
-        title: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.title = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangeFirstName(e) {
-    this.setState({
-      customer: {
-        firstName: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.firstName = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangeLastName(e) {
-    this.setState({
-      customer: {
-        lastName: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.lastName = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangeEmail(e) {
-    this.setState({
-      customer: {
-        email: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.email = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangeDateOfBirth(e) {
-    this.setState({
-      customer: {
-        dateOfBirth: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.dateOfBirth = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangePhoneNumber(e) {
-    this.setState({
-      customer: {
-        phoneNumber: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.phoneNumber = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangeAddress(e) {
-    this.setState({
-      customer: {
-        address: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.address = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangeSuburb(e) {
-    this.setState({
-      customer: {
-        suburb: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.suburb = e.target.value;
+    this.setCustomer(customer);
   }
 
   onChangePostcode(e) {
-    this.setState({
-      customer: {
-        postcode: e.target.value
-      }
-    });
+    const customer = {...this.state.customer};
+    customer.postcode = e.target.value;
+    this.setCustomer(customer);
+  }
+
+  validateCustomer() {
+    var customer = this.state.customer;
+
+    if(customer.firstName === undefined || customer.firstName === '') {
+      return {isValid: false, message: 'First Name cannot be empty!'};      
+    }
+     
+    if(!(/^[a-zA-Z ]+$/.test(customer.firstName))) {
+      return {isValid: false, message: 'Please enter only alphabetical letters for First Name!'};      
+    }
+
+    if(customer.lastName === undefined || customer.lastName === '') {
+      return {isValid: false, message: 'Last Name cannot be empty!'};      
+    }
+     
+    if(!(/^[a-zA-Z ]+$/.test(customer.lastName))) {
+      return {isValid: false, message: 'Please enter only alphabetical letters for Last Name!'};      
+    }
+
+    if(customer.email === undefined || customer.email === '') {
+      return {isValid: false, message: 'Email cannot be empty!'};      
+    }
+     
+    if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(customer.email))) {
+      return {isValid: false, message: 'Invalid email!'};      
+    }
+
+    if(customer.dateOfBirth === undefined || customer.dateOfBirth === '') {
+      return {isValid: false, message: 'Date of Birth cannot be empty!'};      
+    }
+     
+    if(!(/^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/.test(customer.dateOfBirth))) {
+      return {isValid: false, message: 'Invalid date of birth!'};      
+    }
+     
+    if(customer.phoneNumber !== undefined && customer.phoneNumber !== '' && !(/^[0-9]+$/.test(customer.phoneNumber))) {
+      return {isValid: false, message: 'Please enter only numerics for Phone Number!'};      
+    }  
+
+    if(customer.postcode !== undefined && customer.postcode !== '' && !(/^[0-9]+$/.test(customer.postcode))) {
+      return {isValid: false, message: 'Please enter only numerics for Postcode!'};      
+    } 
+    
+    return {isValid: true, message: ''};
   }
 
   saveCustomer() {
-    var data = {
-      title: this.state.title,
-      description: this.state.description
-    };
+    var data = this.state.customer;
+    var error = this.validateCustomer();    
 
-    var isValid = true;
-    var errorMessage = '';
-    if(data.title === '') {
-      isValid = false;
-      errorMessage = 'First Name cannot be empty!'
-    }
-
-    if(isValid) {
-
-      this.setState({
-        errorMessage: ''
-      })
-
+    if(error.isValid) {
+      this.setState({errorMessage: ''})
       CustomerDataService.create(data)
       .then(response => {
         this.setState({
-          id: response.data.id,
-          title: response.data.title,
-          description: response.data.description,
-          published: response.data.published,
-          errorMessage: '',
+          published: response.data.published,     
           submitted: true
         });
         console.log(response.data);
       })
       .catch(e => {
         console.log(e);
-        this.setState({
-          errorMessage: 'Internal server error!'
-        })
+        this.setState({errorMessage: 'Internal server error!'})
       });
     }
     else {
-      this.setState({
-        errorMessage: errorMessage
-      });
+      this.setState({errorMessage: error.message});
     }
   }
 
@@ -234,7 +246,7 @@ export default class AddCustomer extends Component {
               ex: 15/06/1997
             </div>
             <div className="form-group">
-              <label htmlFor="phoneNumber">Phone Number <span className="text-danger">*</span></label>
+              <label htmlFor="phoneNumber">Phone Number</label>
               <input
                 type="text"
                 autoComplete="off"
@@ -284,21 +296,20 @@ export default class AddCustomer extends Component {
                 onChange={this.onChangePostcode}
                 name="postcode"
               />
-            </div>	
+            </div>            
 
-            
+            <div className="form-group">
+              <button onClick={this.saveCustomer} className="btn btn-success">
+                Add
+              </button>
+            </div> 
 
-            <div>
-              <div>
-                <button onClick={this.saveCustomer} className="btn btn-success">
-                  Add
-                </button>
+            <div className="form-group">     
                 {errorMessage !== '' ? 
                   <div className="alert alert-danger" role="alert">
                   {errorMessage}
                   </div>
                   : null} 
-              </div> 
             </div>
             
           </div>
