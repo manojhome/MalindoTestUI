@@ -187,10 +187,10 @@ export default class AddCustomer extends Component {
            
             <div className="form-group">
               <label htmlFor="salutation">Title <span className="text-danger">*</span></label>
-              <select className="form-control" onChange={this.onChangeSalutation} name="salutation">
+              <select className="form-control" onChange={this.onChangeTitle} name="salutation">
                 <option value="Mr.">Mr.</option>
                 <option value="Mrs.">Mrs.</option>
-                <option value="Miss">Miss.</option>
+                <option value="Miss.">Miss.</option>
                 <option value="Mstr.">Mstr.</option>    
               </select>
             </div>
