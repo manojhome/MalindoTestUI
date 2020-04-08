@@ -114,7 +114,7 @@ initialise() {
         <div className="col-md-8">
           <div className="input-group mb-3">
             <input
-              type="text"
+              type="hidden"
               className="form-control"
               placeholder="Coming Soon"
               value={searchTitle}
@@ -122,7 +122,7 @@ initialise() {
             />            
             <div className="input-group-append">
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary hidden"
                 type="button"
                 onClick={this.searchTitle}
               >
