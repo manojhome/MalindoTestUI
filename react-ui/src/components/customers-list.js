@@ -10,15 +10,21 @@ export default class CustomersList extends Component {
     this.refreshList = this.refreshList.bind(this);
     this.setActiveCustomer = this.setActiveCustomer.bind(this);
     this.removeAllCustomers = this.removeAllCustomers.bind(this);
+    this.deleteCustomer = this.deleteCustomer.bind(this);
+
     this.searchTitle = this.searchTitle.bind(this);
-    this.state = {
-      Customers: [],
-      currentCustomer: null,
-      currentIndex: -1,
-      searchKey: "",
-      searchTitleError: ""
-    };  
+    this.initialise();
   }
+
+initialise() {
+  this.state = {
+    Customers: [],
+    currentCustomer: null,
+    currentIndex: -1,
+    searchKey: "",
+    searchTitleError: ""
+  };  
+}
 
   componentDidMount() {
     this.retrieveCustomers();
@@ -51,6 +57,18 @@ export default class CustomersList extends Component {
       currentCustomer: null,
       currentIndex: -1
     });
+  }
+
+  deleteCustomer() {    
+    CustomerDataService.delete(this.state.currentCustomer.customerId)
+      .then(response => {
+        console.log(response.data);
+        this.initialise();
+        this.refreshList();
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }
 
   setActiveCustomer(Customer, index) {
@@ -110,7 +128,8 @@ export default class CustomersList extends Component {
         : null}       
 
         <div className="col-md-6">
-          <h6>Select a customer below...  </h6>
+        <h6>{Customers.length > 0 ? 'Select a customer below...' : 'No customers to view...'}</h6>
+
           <ul className="list-group">
             {Customers &&
               Customers.map((Customer, index) => (
@@ -133,13 +152,13 @@ export default class CustomersList extends Component {
               <h4>Details</h4>
               <div> 
                 <label>
-                  <strong>Full Name:</strong>
+                  <strong>Name:</strong>
                 </label>{" "}
                 {currentCustomer.title} {currentCustomer.firstName} {currentCustomer.lastName}
               </div>
               <div>
                 <label>
-                  <strong>Date of Birth:</strong>
+                  <strong>Birth Date:</strong>
                 </label>{" "}
                 {currentCustomer.dateOfBirth} 
               </div>
@@ -151,9 +170,15 @@ export default class CustomersList extends Component {
               </div>
               <div>
                 <label>
-                  <strong>Phone Number:</strong>
+                  <strong>Phone:</strong>
                 </label>{" "}
                 {currentCustomer.mobilePhoneNo} 
+              </div>
+              <div>
+                <label>
+                  <strong>Address:</strong>
+                </label>{" "}
+                {currentCustomer.streetAddress} 
               </div>
               <div>
                 <label>
@@ -161,6 +186,7 @@ export default class CustomersList extends Component {
                 </label>{" "}
                 {currentCustomer.suburbCity} 
               </div>
+
               <div>
                 <label>
                   <strong>Post code:</strong>
@@ -168,7 +194,7 @@ export default class CustomersList extends Component {
                 {currentCustomer.postCode} 
               </div>
               <Link
-                to={"/Customers/" + currentCustomer}
+                to={"/add/" + currentCustomer.customerId}
                 className="badge badge-warning"
               >
                 Edit
