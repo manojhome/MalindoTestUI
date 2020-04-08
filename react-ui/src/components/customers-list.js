@@ -11,6 +11,7 @@ export default class CustomersList extends Component {
     this.setActiveCustomer = this.setActiveCustomer.bind(this);
     this.removeAllCustomers = this.removeAllCustomers.bind(this);
     this.deleteCustomer = this.deleteCustomer.bind(this);
+    this.formatDate = this.formatDate.bind(this);
 
     this.searchTitle = this.searchTitle.bind(this);
     this.initialise();
@@ -69,6 +70,18 @@ initialise() {
       .catch(e => {
         console.log(e);
       });
+  }
+
+  formatDate(date){
+    if(date.includes('T') && date.length>10){
+        var newdate=date.replace("T00:00:00")
+        var year=newdate.substr(0,4);
+        var month=newdate.substr(5,2);
+        var day=newdate.substr(8,2);
+        var formattedDate=day + "/" + month + "/" + year
+      return formattedDate;
+    }
+    return formattedDate;
   }
 
   setActiveCustomer(Customer, index) {
@@ -160,7 +173,7 @@ initialise() {
                 <label>
                   <strong>Birth Date:</strong>
                 </label>{" "}
-                {currentCustomer.dateOfBirth} 
+                {this.formatDate(currentCustomer.dateOfBirth)} 
               </div>
               <div>
                 <label>
