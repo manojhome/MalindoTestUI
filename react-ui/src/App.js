@@ -35,6 +35,7 @@ class App extends Component {
               <Route exact path={["/", "/customers"]} component={CustomersList} />
               <Route exact path="/add" component={AddCustomer} />
               <Route path="/customers/:id" component={Customer} />
+              <Route path="/add/:id" component={AddCustomer} />
             </Switch>
           </div>
         </div>
