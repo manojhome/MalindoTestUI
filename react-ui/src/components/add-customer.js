@@ -135,9 +135,9 @@ export default class AddCustomer extends Component {
   saveCustomer() {
     var data = this.state.customer;
     var error = this.validateCustomer();
-    var newData = {...data}    
-    const dob = new Date(data.dateOfBirth.replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3") );    
-    const jsonDob = dob.toJSON();
+    var dobArr = data.dateOfBirth.split('/');
+    var newData = {...data}
+    var jsonDob = dobArr[2] + '-' + dobArr[1] + '-' + dobArr[0] + 'T00:00:00';
     newData.dateOfBirth = jsonDob;
 
     if(error.isValid) {
@@ -176,7 +176,7 @@ export default class AddCustomer extends Component {
       <div className="submit-form">
         {this.state.submitted ? (
           <div>
-            <h4>Customer is added successfully!</h4>
+            <h4>Customer is added!</h4>
             <button className="btn btn-success" onClick={this.newCustomer}>
               Add
             </button>
