@@ -15,8 +15,16 @@ export default class AddCustomer extends Component {
     this.onChangeSuburb = this.onChangeSuburb.bind(this);
     this.onChangePostcode = this.onChangePostcode.bind(this);
     this.saveCustomer = this.saveCustomer.bind(this);
+    this.updateCustomer = this.updateCustomer.bind(this);
     this.newCustomer = this.newCustomer.bind(this);    
+    this.initialise = this.initialise.bind(this);  
+    this.getCustomer = this.getCustomer.bind(this);  
+    this.formatDateForCustomer=this.formatDateForCustomer.bind(this);
 
+    this.initialise();
+  }
+
+  initialise(){
     this.state = {
       customer: {title: 'Mr.'},      
       id: null,
@@ -26,8 +34,47 @@ export default class AddCustomer extends Component {
     };
   }
 
+  componentDidMount() {
+    const customerId = this.props.match.params.id;
+    if(customerId){
+      this.getCustomer(customerId);
+    }
+    var test=this.state.customer;
+  }
+
+  getCustomer(id) {
+    CustomerDataService.get(id)
+      .then(response => {
+        this.setState({
+          customer: response.data
+        });
+        console.log(response.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
+  formatDateForCustomer(customer){
+    if(customer.customerId!==undefined && customer.dateOfBirth!==undefined 
+      && customer.customerId>0 )
+    {
+      if(customer.dateOfBirth.includes('T') && customer.dateOfBirth.length>10){
+          var stringdate = customer.dateOfBirth;
+          var newdate=stringdate.replace("T00:00:00")
+          var year=newdate.substr(0,4);
+          var month=newdate.substr(5,2);
+          var day=newdate.substr(8,2);
+          var formattedDate=day + "/" + month + "/" + year
+          customer.dateOfBirth=formattedDate;
+        return customer;
+      }
+    }
+    return customer;
+  }
+
   setCustomer(customer) {
-    this.setState({
+     this.setState({
       customer: customer
     });
   }
@@ -132,6 +179,36 @@ export default class AddCustomer extends Component {
     return {isValid: true, message: ''};
   }
 
+
+  updateCustomer() {
+    var data = this.state.customer;
+    var error = this.validateCustomer();
+    var dobArr = data.dateOfBirth.split('/');
+    var newData = {...data}
+    var jsonDob = dobArr[2] + '-' + dobArr[1] + '-' + dobArr[0] + 'T00:00:00';
+    newData.dateOfBirth = jsonDob;
+
+    if(error.isValid) {
+      this.setState({errorMessage: ''})   
+      CustomerDataService.update (data.customerId, newData)
+      .then(response => {
+        this.setState({
+          published: response.data.published,     
+          submitted: true
+        });
+        console.log(response.data);
+        this.props.history.push('/')
+      })
+      .catch(e => {
+        console.log(e);
+        this.setState({errorMessage: 'Internal server error!'})
+      });
+    }
+    else {
+      this.setState({errorMessage: error.message});
+    }
+  }
+
   saveCustomer() {
     var data = this.state.customer;
     var error = this.validateCustomer();
@@ -172,6 +249,8 @@ export default class AddCustomer extends Component {
 
   render() {
     const { errorMessage} = this.state;
+    const existingCustomer=this.state.customer
+
     return (
       <div className="submit-form">
         {this.state.submitted ? (
@@ -183,7 +262,7 @@ export default class AddCustomer extends Component {
           </div>
         ) : (
           <div>
-            <h4>Add Customer </h4>
+            <h4> { existingCustomer.customerId>0? 'Update Customer':'Add Customer' } </h4>
            
             <div className="form-group">
               <label htmlFor="salutation">Title <span className="text-danger">*</span></label>
@@ -242,7 +321,7 @@ export default class AddCustomer extends Component {
                 className="form-control"
                 id="dateOfBirth"
                 required
-                value={this.state.customer.dateOfBirth}
+                value={this.formatDateForCustomer(this.state.customer).dateOfBirth}
                 onChange={this.onChangeDateOfBirth}
                 name="dateOfBirth"
               />
@@ -302,9 +381,13 @@ export default class AddCustomer extends Component {
             </div>            
 
             <div className="form-group">
-              <button onClick={this.saveCustomer} className="btn btn-success">
-                Add
-              </button>
+
+            {existingCustomer.customerId>0  
+            ? <button onClick={this.updateCustomer} className="btn btn-success"> Update </button>
+            : <button onClick={this.saveCustomer} className="btn btn-success"> Add </button>
+      }
+
+            
             </div> 
 
             <div className="form-group">     
