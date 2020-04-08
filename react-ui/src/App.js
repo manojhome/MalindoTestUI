@@ -23,7 +23,7 @@ class App extends Component {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link"> {/* to={"/customers"} */}   
+                <Link to={"/"} className="nav-link"> {/* to={"/customers"} */}   
                   Show Customers
                 </Link>
               </li>

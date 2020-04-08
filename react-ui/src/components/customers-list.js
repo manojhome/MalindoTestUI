@@ -11,14 +11,13 @@ export default class CustomersList extends Component {
     this.setActiveCustomer = this.setActiveCustomer.bind(this);
     this.removeAllCustomers = this.removeAllCustomers.bind(this);
     this.searchTitle = this.searchTitle.bind(this);
-
     this.state = {
       Customers: [],
       currentCustomer: null,
       currentIndex: -1,
-      searchTitle: "",
+      searchKey: "",
       searchTitleError: ""
-    };
+    };  
   }
 
   componentDidMount() {
@@ -74,29 +73,11 @@ export default class CustomersList extends Component {
 
   searchTitle() {
     var title = this.state.searchTitle;    
-
-    if(title) {
-      CustomerDataService.findByTitle(this.state.searchTitle)
-      .then(response => {
-        this.setState({
-          Customers: response.data
-        });
-        console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-    }
-    else {debugger;
-      this.setState({
-        searchTitleError: "Please enter search text"
-      });
-    }
+    this.state.searchTitle="Coming Soon";
   }
 
   render() {
     const { searchTitle, Customers, currentCustomer, currentIndex, searchTitleError} = this.state;
-
     return (
       <div className="list row">
         <div className="col-md-8">
@@ -104,7 +85,7 @@ export default class CustomersList extends Component {
             <input
               type="text"
               className="form-control"
-              placeholder="Search by title"
+              placeholder="Coming Soon"
               value={searchTitle}
               onChange={this.onChangeSearchTitle}
             />            
@@ -123,14 +104,13 @@ export default class CustomersList extends Component {
         </div>
         
         {searchTitleError !== '' ? 
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-dsanger" role="alert">
         {searchTitleError}
         </div>
         : null}       
 
         <div className="col-md-6">
-          <h4>Customer List</h4>
-
+          <h6>Select a customer below...  </h6>
           <ul className="list-group">
             {Customers &&
               Customers.map((Customer, index) => (
@@ -140,54 +120,70 @@ export default class CustomersList extends Component {
                     (index === currentIndex ? "active" : "")
                   }
                   onClick={() => this.setActiveCustomer(Customer, index)}
-                  key={index}
+                  key={Customer.customerId}
                 >
-                  {Customer.title}
+                  {Customer.title}  {Customer.firstName} {Customer.lastName}
                 </li>
               ))}
           </ul>
-
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllCustomers}
-          >
-            Remove All
-          </button>
         </div>
         <div className="col-md-6">
           {currentCustomer ? (
             <div>
-              <h4>Customer</h4>
-              <div>
+              <h4>Details</h4>
+              <div> 
                 <label>
-                  <strong>Title:</strong>
+                  <strong>Full Name:</strong>
                 </label>{" "}
-                {currentCustomer.title}
+                {currentCustomer.title} {currentCustomer.firstName} {currentCustomer.lastName}
               </div>
               <div>
                 <label>
-                  <strong>Description:</strong>
+                  <strong>Date of Birth:</strong>
                 </label>{" "}
-                {currentCustomer.description}
+                {currentCustomer.dateOfBirth} 
               </div>
               <div>
                 <label>
-                  <strong>Status:</strong>
+                  <strong>Email:</strong>
                 </label>{" "}
-                {currentCustomer.published ? "Published" : "Pending"}
+                {currentCustomer.emailAddress} 
               </div>
-
+              <div>
+                <label>
+                  <strong>Phone Number:</strong>
+                </label>{" "}
+                {currentCustomer.mobilePhoneNo} 
+              </div>
+              <div>
+                <label>
+                  <strong>Suburb:</strong>
+                </label>{" "}
+                {currentCustomer.suburbCity} 
+              </div>
+              <div>
+                <label>
+                  <strong>Post code:</strong>
+                </label>{" "}
+                {currentCustomer.postCode} 
+              </div>
               <Link
-                to={"/Customers/" + currentCustomer.id}
+                to={"/Customers/" + currentCustomer}
                 className="badge badge-warning"
               >
                 Edit
               </Link>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <button
+              className="badge badge-danger mr-2"
+              onClick={this.deleteCustomer}
+            >
+              Delete
+            </button>
             </div>
           ) : (
             <div>
-              <br />
-              <p>Please click on a Customer...</p>
+          
             </div>
           )}
         </div>
