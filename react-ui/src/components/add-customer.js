@@ -18,7 +18,7 @@ export default class AddCustomer extends Component {
     this.newCustomer = this.newCustomer.bind(this);    
 
     this.state = {
-      customer: {},      
+      customer: {title: 'Mr.'},      
       id: null,
       published: false,
       submitted: false,
@@ -52,7 +52,7 @@ export default class AddCustomer extends Component {
 
   onChangeEmail(e) {
     const customer = {...this.state.customer};
-    customer.email = e.target.value;
+    customer.emailAddress = e.target.value;
     this.setCustomer(customer);
   }
 
@@ -64,25 +64,25 @@ export default class AddCustomer extends Component {
 
   onChangePhoneNumber(e) {
     const customer = {...this.state.customer};
-    customer.phoneNumber = e.target.value;
+    customer.mobilePhoneNo = e.target.value;
     this.setCustomer(customer);
   }
 
   onChangeAddress(e) {
     const customer = {...this.state.customer};
-    customer.address = e.target.value;
+    customer.streetAddress = e.target.value;
     this.setCustomer(customer);
   }
 
   onChangeSuburb(e) {
     const customer = {...this.state.customer};
-    customer.suburb = e.target.value;
+    customer.suburbCity = e.target.value;
     this.setCustomer(customer);
   }
 
   onChangePostcode(e) {
     const customer = {...this.state.customer};
-    customer.postcode = e.target.value;
+    customer.postCode = e.target.value;
     this.setCustomer(customer);
   }
 
@@ -105,12 +105,12 @@ export default class AddCustomer extends Component {
       return {isValid: false, message: 'Please enter only alphabetical letters for Last Name!'};      
     }
 
-    if(customer.email === undefined || customer.email === '') {
+    if(customer.emailAddress === undefined || customer.emailAddress === '') {
       return {isValid: false, message: 'Email cannot be empty!'};      
     }
      
-    if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(customer.email))) {
-      return {isValid: false, message: 'Invalid email!'};      
+    if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(customer.emailAddress))) {
+      return {isValid: false, message: 'Invalid emailAddress!'};      
     }
 
     if(customer.dateOfBirth === undefined || customer.dateOfBirth === '') {
@@ -121,11 +121,11 @@ export default class AddCustomer extends Component {
       return {isValid: false, message: 'Invalid date of birth!'};      
     }
      
-    if(customer.phoneNumber !== undefined && customer.phoneNumber !== '' && !(/^[0-9]+$/.test(customer.phoneNumber))) {
+    if(customer.mobilePhoneNo !== undefined && customer.mobilePhoneNo !== '' && !(/^[0-9]+$/.test(customer.mobilePhoneNo))) {
       return {isValid: false, message: 'Please enter only numerics for Phone Number!'};      
     }  
 
-    if(customer.postcode !== undefined && customer.postcode !== '' && !(/^[0-9]+$/.test(customer.postcode))) {
+    if(customer.postCode !== undefined && customer.postCode !== '' && !(/^[0-9]+$/.test(customer.postCode))) {
       return {isValid: false, message: 'Please enter only numerics for Postcode!'};      
     } 
     
@@ -134,11 +134,15 @@ export default class AddCustomer extends Component {
 
   saveCustomer() {
     var data = this.state.customer;
-    var error = this.validateCustomer();    
+    var error = this.validateCustomer();
+    var newData = {...data}    
+    const dob = new Date(data.dateOfBirth.replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3") );    
+    const jsonDob = dob.toJSON();
+    newData.dateOfBirth = jsonDob;
 
     if(error.isValid) {
-      this.setState({errorMessage: ''})
-      CustomerDataService.create(data)
+      this.setState({errorMessage: ''})       
+      CustomerDataService.create(newData)
       .then(response => {
         this.setState({
           published: response.data.published,     
@@ -172,7 +176,7 @@ export default class AddCustomer extends Component {
       <div className="submit-form">
         {this.state.submitted ? (
           <div>
-            <h4>You submitted successfully!</h4>
+            <h4>Customer is added successfully!</h4>
             <button className="btn btn-success" onClick={this.newCustomer}>
               Add
             </button>
@@ -184,11 +188,10 @@ export default class AddCustomer extends Component {
             <div className="form-group">
               <label htmlFor="salutation">Title <span className="text-danger">*</span></label>
               <select className="form-control" onChange={this.onChangeSalutation} name="salutation">
-                <option value="MR">Mr.</option>
-                <option value="MRS">Mrs.</option>
-                <option value="MISS">Miss.</option>
-                <option value="MSTR">Mstr.</option>
-                <option value="OTHER">Other</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Miss">Miss.</option>
+                <option value="Mstr.">Mstr.</option>    
               </select>
             </div>
 
@@ -219,16 +222,16 @@ export default class AddCustomer extends Component {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="email">Email <span className="text-danger">*</span></label>
+              <label htmlFor="emailAddress">Email <span className="text-danger">*</span></label>
               <input
                 type="text"
                 autoComplete="off"
                 className="form-control"
-                id="email"
+                id="emailAddress"
                 required
-                value={this.state.customer.email}
+                value={this.state.customer.emailAddress}
                 onChange={this.onChangeEmail}
-                name="email"
+                name="emailAddress"
               />
             </div>
             <div className="form-group">
@@ -246,55 +249,55 @@ export default class AddCustomer extends Component {
               ex: 15/06/1997
             </div>
             <div className="form-group">
-              <label htmlFor="phoneNumber">Phone Number</label>
+              <label htmlFor="mobilePhoneNo">Phone Number</label>
               <input
                 type="text"
                 autoComplete="off"
                 className="form-control"
-                id="phoneNumber"
+                id="mobilePhoneNo"
                 required
-                value={this.state.customer.phoneNumber}
+                value={this.state.customer.mobilePhoneNo}
                 onChange={this.onChangePhoneNumber}
-                name="phoneNumber"
+                name="mobilePhoneNo"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="address">Address</label>
+              <label htmlFor="streetAddress">Address</label>
               <input
                 type="text"
                 autoComplete="off"
                 className="form-control"
-                id="address"
+                id="streetAddress"
                 required
-                value={this.state.customer.address}
+                value={this.state.customer.streetAddress}
                 onChange={this.onChangeAddress}
-                name="address"
+                name="streetAddress"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="suburb">Suburb</label>
+              <label htmlFor="suburbCity">Suburb</label>
               <input
                 type="text"
                 autoComplete="off"
                 className="form-control"
-                id="suburb"
+                id="suburbCity"
                 required
-                value={this.state.customer.suburb}
+                value={this.state.customer.suburbCity}
                 onChange={this.onChangeSuburb}
-                name="suburb"
+                name="suburbCity"
               />
             </div>			
             <div className="form-group">
-              <label htmlFor="postcode">Postcode</label>
+              <label htmlFor="postCode">Postcode</label>
               <input
                 type="text"
                 autoComplete="off"
                 className="form-control"
-                id="postcode"
+                id="postCode"
                 required
-                value={this.state.customer.postcode}
+                value={this.state.customer.postCode}
                 onChange={this.onChangePostcode}
-                name="postcode"
+                name="postCode"
               />
             </div>            
 
